@@ -8,10 +8,9 @@ const UserProduct = () => {
   const username = localStorage.getItem("username") || "Guest";
 
   return (
-    <div style={{ width: "1270px" }}>
-      {/* Navbar */}
-      <nav style={{ backgroundColor: "black", padding: "15px", display: "flex", justifyContent: "space-between", alignItems: "center", height: "70px", width: "1270px" }}>
-        <h3 style={{ color: "white" }}>Online Shoppy</h3>
+    <div>
+         <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px"}}>
+            <h3 style={{color:"white", position:"sticky", right:"1000px"}}>Mobile Shoppy</h3>
         <div style={{ display: "flex", justifyContent: "space-around", flexGrow: 1 }}>
           <Link to="/user/products" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>Products</Link>
           <Link to="/orders/history" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>My Orders</Link>

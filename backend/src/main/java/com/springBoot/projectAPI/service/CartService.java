@@ -32,6 +32,10 @@ public class CartService {
     	return null;
     }
 
+    public Cart saveCart(Cart cart)
+    {
+    	return cartRepository.save(cart);
+    }
 
     public Cart addToCart2(Long userId, Long productId, int quantity) {
         // Check if the cart exists for the user

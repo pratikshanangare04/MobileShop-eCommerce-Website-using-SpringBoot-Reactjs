@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.springBoot.projectAPI.dto.Cart;
+import com.springBoot.projectAPI.dto.Order;
 import com.springBoot.projectAPI.service.CartService;
 import com.springBoot.projectAPI.service.OrderService;
 
@@ -56,21 +57,30 @@ public class CartController {
             double totalPrice = cartService.calculateTotalPrice(userId);
             return ResponseEntity.ok(totalPrice); // Return the total price with 200 OK
         } catch (RuntimeException e) {
-            // Handle cases like cart not found or product missing
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(0.0);
         }
     }
     
-    @PostMapping("/place/{userId}")
-    public ResponseEntity<Void> placeOrder(@PathVariable Long userId) {
+//    @PostMapping("/place/{userId}")
+//    public ResponseEntity<Void> placeOrder(@PathVariable Long userId) {
+//        try {
+//            orderService.placeOrder(userId); // Place the order
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(null); // Return bad request if any error occurs
+//        }
+//    }
+
+    @PostMapping("/place/{userId}/{productId}")
+    public ResponseEntity<Void> placeOrder(@PathVariable Long userId, @PathVariable Long productId) {
         try {
-            orderService.placeOrder(userId); // Place the order
+            // Call the service method to place the order
+            Order order = orderService.placeOrder(userId, productId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null); // Return bad request if any error occurs
         }
     }
-
     // Endpoint to clear the cart (can be called after order placement)
     @DeleteMapping("/{userId}/clear")
     public ResponseEntity<Void> clearCart(@PathVariable Long userId) {

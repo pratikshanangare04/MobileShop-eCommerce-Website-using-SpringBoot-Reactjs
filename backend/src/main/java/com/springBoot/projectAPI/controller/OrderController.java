@@ -18,9 +18,9 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("/place/{userId}")
-    public Order placeOrder(@PathVariable Long userId) {
-        return orderService.placeOrder(userId);
+    @PostMapping("/place/{userId}/{productId}")
+    public Order placeOrder(@PathVariable Long userId, @PathVariable Long productId) {
+        return orderService.placeOrder(userId, productId);
     }
 
     @GetMapping("/history/{userId}")

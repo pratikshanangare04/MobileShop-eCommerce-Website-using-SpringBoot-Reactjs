@@ -135,19 +135,18 @@ const Cart = () => {
   //   }
   // };
   
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (productId) => {
     try {
       const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       
       // Place the order
-      const response = await axios.post(`http://localhost:8080/api/orders/place/${userId}`, null, { headers });
+      const response = await axios.post(`http://localhost:8080/api/orders/place/${userId}/${productId}`, null, { headers });
   
-      // After successful order placement, update stock and clear cart
       await updateStockAndClearCart();
       
       alert("Order placed successfully! Pay on delivery.");
-      navigate("/order/place/submit"); // Optionally navigate to order history page
+      navigate("/order/place/submit"); 
   
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
@@ -181,9 +180,9 @@ const Cart = () => {
   
 
   return (
-    <div style={{ width: "1270px" }}>
-      <nav style={{ backgroundColor: "black", padding: "15px", display: "flex", justifyContent: "space-between", alignItems: "center", height: "70px", width: "1270px" }}>
-        <h3 style={{ color: "white" }}>Online Shoppy</h3>
+    <div>
+         <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px"}}>
+            <h3 style={{color:"white", position:"sticky", right:"1000px"}}>Mobile Shoppy</h3>
         <div style={{ display: "flex", justifyContent: "space-around", flexGrow: 1 }}>
           <Link to="/user/products" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>Products</Link>
           <Link to="/orders/history" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>My Orders</Link>
@@ -234,7 +233,7 @@ const Cart = () => {
                   style={{ marginLeft: "10px", padding: "5px", borderRadius: "5px", width: "70px"}}
                 />
 
-                <button style={{padding:"5px", margin:"20px", borderRadius:"10%", fontSize:"20px", backgroundColor:"yellow"}} onClick={()=>handlePlaceOrder()}>Order</button>
+                <button style={{padding:"5px", margin:"20px", borderRadius:"10%", fontSize:"20px", backgroundColor:"yellow"}} onClick={()=>handlePlaceOrder(item.productId)}>Order</button>
             </div>
                 );
             })}

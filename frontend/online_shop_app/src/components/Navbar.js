@@ -34,9 +34,9 @@ const Navbar=()=>{
     }
   };
     return(
-       <div style={{width:"1270px"}}>
-         <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px",width:"1270px"}}>
-            <h3 style={{color:"white", marginRight:"500px"}}>Mobile Shoppy</h3>
+      <div>
+      <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px"}}>
+         <h3 style={{color:"white", position:"sticky", right:"1000px"}}>Mobile Shoppy</h3>
             <Link to="/signIn" style={{color:"white", fontSize:"20px",textDecoration:"none",marginLeft:"20px"}}><button style={{border:"0px", backgroundColor:"red",padding:"5px",borderRadius:"10px",height:"40px",color:"white"}}>Sign In</button></Link>
             <Link to="/signUp" style={{color:"white", fontSize:"20px",textDecoration:"none",marginLeft:"20px"}}><button style={{border:"0px", backgroundColor:"red",padding:"5px",borderRadius:"10px",height:"40px",color:"white"}}>Sign Up</button></Link>
             <div><input style={{marginLeft:"20px", padding:"5px", borderRadius:"10px"}}

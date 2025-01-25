@@ -22,18 +22,6 @@ const AdminDashboard = () => {
     fetchProduct();
   }, []);
 
-  // useEffect(() => {
-  //   axios.get("http://localhost:8080/api/products")
-  //     .then(response => {
-  //       setProducts(Array.isArray(response.data) ? response.data : response.data.products || []);
-  //       setLoading(false);
-  //     })
-  //     .catch(error => {
-  //       console.error("Error fetching data:", error);
-  //       setError("Failed to load products");
-  //       setLoading(false);
-  //     });
-  // }, []);
 
   const fetchProduct=async()=>{
     axios.get("http://localhost:8080/api/products")
@@ -153,19 +141,9 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div style={{ width: "1270px" }}>
-      <nav
-        style={{
-          backgroundColor: "black",
-          padding: "15px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          height: "70px",
-          width: "1270px",
-        }}
-      >
-        <h3 style={{ color: "white" }}>Online Shoppy</h3>
+    <div>
+         <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px"}}>
+            <h3 style={{color:"white", position:"sticky", right:"1000px"}}>Mobile Shoppy</h3>
         <div style={{ display: "flex", justifyContent: "space-around", flexGrow: 1 }}>
           <button  onClick={() => setSelectedSection("product")}
             style={{ color: "white", fontSize: "20px", textDecoration: "none", background: "none", border: "none" }}

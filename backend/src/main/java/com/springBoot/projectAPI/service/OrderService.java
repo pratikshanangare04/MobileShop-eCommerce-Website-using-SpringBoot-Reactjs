@@ -38,6 +38,7 @@ public class OrderService {
     @Autowired
     private ProductService productService;
 
+
 //    public Order placeOrder(Long userId) {
 //        // Get user's cart
 //        Cart cart = cartService.getCartByUserId(userId);
@@ -50,6 +51,13 @@ public class OrderService {
 //        Order order = new Order();
 //        order.setUserId(userId);
 //        order.setOrderDate(new Date());
+//        order.setPaymentMethod("Cash on Delivery");
+//        
+//
+//        // Initialize the items list if it is null
+//        if (order.getItems() == null) {
+//            order.setItems(new ArrayList<>());
+//        }
 //
 //        // Map cart items to order items
 //        double totalAmount = 0;
@@ -59,12 +67,11 @@ public class OrderService {
 //
 //            OrderItem orderItem = new OrderItem();
 //            orderItem.setProductId(product.getId());
-//            orderItem.setProductName(product.getTitle());
-//            orderItem.setPrice(product.getPrice());
+//            orderItem.setProductName(product.getName());
+//            orderItem.setPrice(product.getDiscountPrice());
 //            orderItem.setQuantity(cartItem.getQuantity());
-//
-//            order.getItems().add(orderItem);
-//            totalAmount += product.getPrice() * cartItem.getQuantity();
+//            order.getItems().add(orderItem);  // Safely adding to the list
+//            totalAmount += product.getDiscountPrice()* cartItem.getQuantity();
 //        }
 //
 //        order.setTotalAmount(totalAmount);
@@ -72,55 +79,48 @@ public class OrderService {
 //        // Save order
 //        order = orderRepository.save(order);
 //
+//        cartService.updateStockAfterOrder(cart.getItems());
+//        cartService.clearCart(userId);
 //        // Clear user's cart
 //        cartService.getCartByUserId(userId).getItems().clear();
 //        return order;
 //    }
+
     
-    public Order placeOrder(Long userId) {
-        // Get user's cart
+    public Order placeOrder(Long userId, Long productId) {
         Cart cart = cartService.getCartByUserId(userId);
 
-        if (cart.getItems().isEmpty()) {
-            throw new RuntimeException("Cart is empty");
-        }
+        CartItem cartItem = cart.getItems().stream()
+                .filter(item -> item.getProductId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Product not found in cart"));
 
-        // Create order and populate details
         Order order = new Order();
         order.setUserId(userId);
         order.setOrderDate(new Date());
         order.setPaymentMethod("Cash on Delivery");
-        
+        order.setItems(new ArrayList<>());
 
-        // Initialize the items list if it is null
-        if (order.getItems() == null) {
-            order.setItems(new ArrayList<>());
-        }
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Map cart items to order items
-        double totalAmount = 0;
-        for (CartItem cartItem : cart.getItems()) {
-            Product product = productRepository.findById(cartItem.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProductId(product.getId());
+        orderItem.setProductName(product.getName());
+        orderItem.setPrice(product.getDiscountPrice());
+        orderItem.setQuantity(cartItem.getQuantity());
+        order.getItems().add(orderItem);
 
-            OrderItem orderItem = new OrderItem();
-            orderItem.setProductId(product.getId());
-            orderItem.setProductName(product.getName());
-            orderItem.setPrice(product.getDiscountPrice());
-            orderItem.setQuantity(cartItem.getQuantity());
-            order.getItems().add(orderItem);  // Safely adding to the list
-            totalAmount += product.getDiscountPrice()* cartItem.getQuantity();
-        }
-
+        double totalAmount = product.getDiscountPrice() * cartItem.getQuantity();
         order.setTotalAmount(totalAmount);
 
-        // Save order
         order = orderRepository.save(order);
 
-        cartService.updateStockAfterOrder(cart.getItems());
-        cartService.clearCart(userId);
-        // Clear user's cart
-        cartService.getCartByUserId(userId).getItems().clear();
+        cartService.updateStockAfterOrder(List.of(cartItem));
+
+        cart.getItems().remove(cartItem);
+        cartService.saveCart(cart);
+
         return order;
     }
 
@@ -130,37 +130,7 @@ public class OrderService {
     }
     
     
-//    public Order cancelOrder(Long orderId) {
-//        // Fetch the order by id
-//        Order order = orderRepository.findById(orderId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Order not found for id " + orderId));
-//
-//        // Check if the order is in 'PENDING' status, which can be canceled
-//        if (order.getStatus() != Order.OrderStatus.PENDING) {
-//            throw new IllegalStateException("Only orders with 'PENDING' status can be canceled.");
-//        }
-//
-//        // Return the stock for each product in the order
-//        for (OrderItem item : order.getItems()) {
-//            // Get the product and its current stock
-//            Product product = productRepository.findById(item.getProductId())
-//                    .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + item.getProductId()));
-//
-//            // Increase the stock for the product
-//            product.setStock(product.getStock() + item.getQuantity());
-//
-//            // Save the updated product back to the database
-//            productRepository.save(product);
-////            orderRepository.delete(order);
-//        }
-//
-//        // Update the order status to 'CANCELED'
-//        order.setStatus(Order.OrderStatus.CANCELED);
-//
-//        // Save the updated order
-//        return orderRepository.save(order);
-//    }
-    
+
     public void cancelOrder(Long orderId) {
         // Fetch the order by id
         Order order = orderRepository.findById(orderId)
@@ -193,21 +163,17 @@ public class OrderService {
 
     
     public List<Order> getAllOrderDetails() {
-        // Fetch all orders from the database
         List<Order> orders = orderRepository.findAll();
 
-        // Extract product IDs from all order items
         List<Long> productIds = orders.stream()
                                       .flatMap(order -> order.getItems().stream())
                                       .map(OrderItem::getProductId)
                                       .collect(Collectors.toList());
 
-        // Fetch all products in one query
         List<Product> products = productRepository.findAllById(productIds);
         Map<Long, Product> productMap = products.stream()
                                                 .collect(Collectors.toMap(Product::getId, product -> product));
-
-        // Enrich each order with product details
+        
         List<Order> enrichedOrders = new ArrayList<>();
         for (Order order : orders) {
             List<OrderItem> enrichedOrderItems = new ArrayList<>();
@@ -241,19 +207,15 @@ public class OrderService {
 
 
     public Order updateOrderStatusToShipped(Long orderId) {
-        // Fetch the order by id
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found for id " + orderId));
 
-        // Check if the order is in 'PENDING' status, which can be updated to 'SHIPPED'
         if (order.getStatus() != Order.OrderStatus.PENDING) {
             throw new IllegalStateException("Only orders with 'PENDING' status can be marked as 'SHIPPED'.");
         }
 
-        // Update the order status to 'SHIPPED'
         order.setStatus(Order.OrderStatus.SHIPPED);
 
-        // Save the updated order
         return orderRepository.save(order);
     }
 
