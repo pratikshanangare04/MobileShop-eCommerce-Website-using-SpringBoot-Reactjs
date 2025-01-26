@@ -16,8 +16,6 @@ import ProductPage from "../pages/ProductPage";
 {/* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> */}
 
 
-
-
 const Navbar=()=>{
     const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -34,9 +32,9 @@ const Navbar=()=>{
     }
   };
     return(
-      <div>
-      <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px"}}>
-         <h3 style={{color:"white", position:"sticky", right:"1000px"}}>Mobile Shoppy</h3>
+       <div>
+         <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px"}}>
+            <h3 style={{color:"white", position:"sticky", right:"1000px"}}>Mobile Shoppy</h3>
             <Link to="/signIn" style={{color:"white", fontSize:"20px",textDecoration:"none",marginLeft:"20px"}}><button style={{border:"0px", backgroundColor:"red",padding:"5px",borderRadius:"10px",height:"40px",color:"white"}}>Sign In</button></Link>
             <Link to="/signUp" style={{color:"white", fontSize:"20px",textDecoration:"none",marginLeft:"20px"}}><button style={{border:"0px", backgroundColor:"red",padding:"5px",borderRadius:"10px",height:"40px",color:"white"}}>Sign Up</button></Link>
             <div><input style={{marginLeft:"20px", padding:"5px", borderRadius:"10px"}}
@@ -45,7 +43,7 @@ const Navbar=()=>{
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <button onClick={handleSearch} style={{margin:"2px", padding:"5px", borderRadius:"10px"}}>Search</button></div>
+         <button onClick={handleSearch} style={{margin:"2px", padding:"5px", borderRadius:"10px"}}>Search</button></div>
         </nav>
         <div>
         <CarouselComponent />
@@ -55,7 +53,6 @@ const Navbar=()=>{
 
      <div>
       {selectedProduct ? (
-        // Display selected product details
         <div
           style={{
             display: "flex",

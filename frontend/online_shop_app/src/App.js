@@ -21,6 +21,7 @@ import ProductPage from './pages/ProductPage';
 import ProductDetails from './pages/ProductDetails';
 
 import OrderPlacePages from './pages/OrderPlacePages';
+import UpdateUser from './components/UpdateProfile';
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
         <Route path="/admin/products" element={<AdminProduct/>} />
         <Route path="/user/products" element={<UserProduct/>}/>
         <Route path="/cart" element={<Cart/>} />
+        <Route path="user/update-profile" element={<UpdateUser/>}/>
         <Route path="/orders/place" element={<PlaceOrder/>} />
         <Route path="/orders/history" element={<OrderHistory/>} />
         <Route path="/user/product" element={<ProductPage/>}/>

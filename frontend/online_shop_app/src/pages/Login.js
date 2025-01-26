@@ -43,8 +43,13 @@ const Login = () => {
       localStorage.setItem("role", resp.data.role);
       localStorage.setItem("username", resp.data.username);
       localStorage.setItem("id", resp.data.id);
+      localStorage.setItem("email",resp.data.email);
+      localStorage.setItem("mobileNumber",resp.data.mobileNumber);
+      localStorage.setItem("address",resp.data.address);
+      localStorage.setItem("city",resp.data.city);
+      localStorage.setItem("state",resp.data.state);
+      localStorage.setItem("pincode",resp.data.pincode);
       
-
       console.log(userData)
       alert("Login Successfully");
 

@@ -54,6 +54,7 @@ const OrderHistory = () => {
           <Link to="/user/products" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>Products</Link>
           <Link to="/orders/history" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>My Orders</Link>
           <Link to="/cart" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>My Cart</Link>
+          <Link to="/user/update-profile" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>User</Link>
           <h1 style={{ color: "white", marginLeft: "20px", fontSize: "20px" }}>Welcome, {username}</h1>
           <Link to="/logOut" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>
             <button style={{ border: "0px", backgroundColor: "red", padding: "5px", borderRadius: "10px", height: "40px", color: "white" }}>Log Out</button>

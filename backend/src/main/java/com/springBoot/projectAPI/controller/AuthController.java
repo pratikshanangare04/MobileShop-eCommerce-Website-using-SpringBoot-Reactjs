@@ -74,4 +74,46 @@ public class AuthController {
     	}
     	return null;
     }
+    
+    @PatchMapping("/update/{userId}")
+    public User updateUser(@PathVariable Long userId, @RequestBody User user) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User existingUser = userOptional.get();
+            
+            // Update only the fields that are passed in the request
+            if (user.getUsername() != null) {
+                existingUser.setUsername(user.getUsername());
+            }
+            if (user.getPassword() != null) {
+            	existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+            if (user.getRole() != null) {
+                existingUser.setRole(user.getRole());
+            }
+            if (user.getAddress() != null) {
+                existingUser.setAddress(user.getAddress());
+            }
+            if (user.getCity() != null) {
+                existingUser.setCity(user.getCity());
+            }
+            if (user.getState() != null) {
+                existingUser.setState(user.getState());
+            }
+            if (user.getPincode() != null) {
+                existingUser.setPincode(user.getPincode());
+            }
+            if (user.getMobileNumber() != 0) {
+                existingUser.setMobileNumber(user.getMobileNumber());
+            }
+            if (user.getEmail() != null) {
+                existingUser.setEmail(user.getEmail());
+            }
+
+            // Save the updated user
+            return userRepository.save(existingUser);
+        }
+        return null;  // User not found
+    }
+
 }

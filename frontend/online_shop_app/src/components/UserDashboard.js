@@ -47,13 +47,14 @@ const UserDashboard = () => {
 
   return (
     <div>
-    <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px"}}>
-       <h3 style={{color:"white", position:"sticky", right:"1000px"}}>Mobile Shoppy</h3>
+         <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px"}}>
+            <h3 style={{color:"white", position:"sticky", right:"1000px"}}>Mobile Shoppy</h3>
         <div style={{ display: "flex", justifyContent: "space-around", flexGrow: 1 }}>
          <Link to="/user/products" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>Products</Link>
           <Link to="/orders/history" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>My Orders</Link>
           <Link to="/cart" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>My Cart</Link>
-          <h1 style={{ color: "white", marginLeft: "20px", fontSize:"20px" }}>Welcome, {username}</h1>
+          <Link to="/user/update-profile" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>User</Link>
+          <h1 style={{ color: "white", fontSize:"20px" }}>Welcome, {username}</h1>
         </div>
         <div><input
             style={{ marginLeft: "20px", padding: "5px", borderRadius: "5px", border: "1px solid #ccc" }}

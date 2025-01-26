@@ -6,16 +6,43 @@ import DisplayPage from "./DisplayPage";
 
 const UserProduct = () => {
   const username = localStorage.getItem("username") || "Guest";
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+
+  const handleSearch = async () => {
+    if (!query.trim()) {
+      alert("Please enter a product name.");
+      return;
+    }
+
+    try {
+      const response = await axios.get(`http://localhost:8080/api/products/search`, {
+        params: { name: query },
+      });
+      setResults(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
   return (
     <div>
-         <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px"}}>
-            <h3 style={{color:"white", position:"sticky", right:"1000px"}}>Mobile Shoppy</h3>
+    <nav style={{backgroundColor:"black",padding:"15px", display:"flex", justifyContent:"flex-end",height:"70px"}}>
+       <h3 style={{color:"white", position:"sticky", right:"1000px"}}>Mobile Shoppy</h3>
         <div style={{ display: "flex", justifyContent: "space-around", flexGrow: 1 }}>
           <Link to="/user/products" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>Products</Link>
           <Link to="/orders/history" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>My Orders</Link>
           <Link to="/cart" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>My Cart</Link>
+          <Link to="/user/update-profile" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>User</Link>
           <h1 style={{ color: "white", marginLeft: "20px", fontSize: "20px" }}>Welcome, {username}</h1>
+          <div><input
+            style={{ marginLeft: "20px", padding: "5px", borderRadius: "5px", border: "1px solid #ccc" }}
+            type="text"
+            placeholder="Enter product name"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+      <button onClick={handleSearch} style={{margin:"2px", padding:"5px", borderRadius:"10px"}}>Search</button></div>
           <Link to="/logOut" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>
             <button style={{ border: "0px", backgroundColor: "red", padding: "5px", borderRadius: "10px", height: "40px", color: "white" }}>Log Out</button>
           </Link>

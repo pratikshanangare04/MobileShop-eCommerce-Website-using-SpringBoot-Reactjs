@@ -24,6 +24,8 @@ const Cart = () => {
     }
   }, [cart]);
 
+  
+
   const fetchCart = async () => {
     try {
       setLoading(true);
@@ -73,6 +75,7 @@ const Cart = () => {
       setError(`Cannot add more than available stock (${availableStock}).`);
       return;
     }
+    
 
     try {
       await axios.post(`http://localhost:8080/api/cart/${userId}/add2`, null, {
@@ -111,7 +114,7 @@ const Cart = () => {
     }
 
     try {
-      await axios.put(`http://localhost:8080/api/cart/${userId}/update`, null, {
+      const resp= await axios.put(`http://localhost:8080/api/cart/${userId}/update`, null, {
         params: { productId, quantity },
       });
       fetchCart();
@@ -121,61 +124,12 @@ const Cart = () => {
     }
   };
 
-  // const handlePlaceOrder = async () => {
-  //   try {
-  //     const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
-  //     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  //     const response = await axios.post(`http://localhost:8080/api/orders/place/${userId}`, null, { headers });
   
-  //     alert("Order placed successfully!");
-  //     //navigate("/orders/history");
-  //   } catch (error) {
-  //     const errorMessage = error.response?.data?.message || error.message;
-  //     alert(`Error placing order: ${errorMessage}`);
-  //   }
-  // };
-  
-  const handlePlaceOrder = async (productId) => {
-    try {
-      const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      
-      // Place the order
-      const response = await axios.post(`http://localhost:8080/api/orders/place/${userId}/${productId}`, null, { headers });
-  
-      await updateStockAndClearCart();
-      
-      alert("Order placed successfully! Pay on delivery.");
-      navigate("/order/place/submit"); 
-  
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message;
-      alert(`Error placing order: ${errorMessage}`);
-    }
-  };
-  
-  // Function to update product stock and clear cart
-  const updateStockAndClearCart = async () => {
-    try {
-      // Update product stock
-      await Promise.all(cart.map(async (item) => {
-        const productDetails = getProductDetails(item.productId);
-        const newStock = productDetails.stock - item.quantity;
-  
-        await axios.put(`http://localhost:8080/api/products/${item.productId}/updateStock`, null, {
-          params: { stock: newStock },
-        });
-      }));
-  
-      // Clear the cart by removing items from the cart
-      await axios.delete(`http://localhost:8080/api/cart/${userId}/clear`);
-  
-      // Fetch the updated cart and total price after clearing
-      fetchCart();
-      fetchTotalPrice();
-    } catch (err) {
-      setError("Failed to update stock and clear cart. Please try again.");
-    }
+  const handleButtonClick = (productId,quantity) => {
+    const selectedProduct = getProductDetails(productId);
+    navigate("/orders/place", {
+      state: { cart, totalPrice, userId,productId,quantity, selectedProduct},
+    });
   };
   
 
@@ -187,6 +141,7 @@ const Cart = () => {
           <Link to="/user/products" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>Products</Link>
           <Link to="/orders/history" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>My Orders</Link>
           <Link to="/cart" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>My Cart</Link>
+          <Link to="/user/update-profile" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>User</Link>
           <h1 style={{ color: "white", marginLeft: "20px", fontSize: "20px" }}>Welcome, {username}</h1>
           <Link to="/logOut" style={{ color: "white", fontSize: "20px", textDecoration: "none" }}>
             <button style={{ border: "0px", backgroundColor: "red", padding: "5px", borderRadius: "10px", height: "40px", color: "white" }}>Log Out</button>
@@ -233,7 +188,9 @@ const Cart = () => {
                   style={{ marginLeft: "10px", padding: "5px", borderRadius: "5px", width: "70px"}}
                 />
 
-                <button style={{padding:"5px", margin:"20px", borderRadius:"10%", fontSize:"20px", backgroundColor:"yellow"}} onClick={()=>handlePlaceOrder(item.productId)}>Order</button>
+<button style={{padding:"5px", margin:"20px", borderRadius:"10%", fontSize:"20px", backgroundColor:"yellow"}} onClick={()=>handleButtonClick(item.productId,item.quantity)}>Order</button>
+
+                {/* <button style={{padding:"5px", margin:"20px", borderRadius:"10%", fontSize:"20px", backgroundColor:"yellow"}} onClick={()=>handlePlaceOrder(item.productId)}>Order</button> */}
             </div>
                 );
             })}

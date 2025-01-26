@@ -139,31 +139,42 @@ public class CartService {
         cart.getItems().clear(); // Clear all items in the cart
         cartRepository.save(cart); // Save the cart
     }
-
+//
+//    public void updateStockAfterOrder(List<CartItem> cartItems) {
+//        for (CartItem item : cartItems) {
+//            // Use Optional to retrieve the product from the repository
+//            Optional<Product> optionalProduct = productRepository.findById(item.getProductId());
+//
+//            // If the product is not found, throw ResourceNotFoundException
+//            optionalProduct.orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + item.getProductId()));
+//
+//            // If the product is present, check the stock and update it
+//            optionalProduct.ifPresent(product -> {
+//                // Calculate the new stock after the order
+//                int newStock = product.getStock() - item.getQuantity();
+//
+//                // Check if stock is sufficient
+//                if (newStock < 0) {
+//                    throw new InvalidStockException("Not enough stock for product: " + product.getName());
+//                }
+//
+//                // Update product stock and save the product
+//                product.setStock(newStock);
+//                productRepository.save(product);
+//            });
+//        }
+//    }
+    
     public void updateStockAfterOrder(List<CartItem> cartItems) {
         for (CartItem item : cartItems) {
-            // Use Optional to retrieve the product from the repository
-            Optional<Product> optionalProduct = productRepository.findById(item.getProductId());
-
-            // If the product is not found, throw ResourceNotFoundException
-            optionalProduct.orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + item.getProductId()));
-
-            // If the product is present, check the stock and update it
-            optionalProduct.ifPresent(product -> {
-                // Calculate the new stock after the order
-                int newStock = product.getStock() - item.getQuantity();
-
-                // Check if stock is sufficient
-                if (newStock < 0) {
-                    throw new InvalidStockException("Not enough stock for product: " + product.getName());
-                }
-
-                // Update product stock and save the product
-                product.setStock(newStock);
-                productRepository.save(product);
-            });
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found for stock update"));
+            // Update product stock (assuming you have a stock field in your Product entity)
+            product.setStock(product.getStock() - item.getQuantity());
+            productRepository.save(product);
         }
     }
+
 }
 
 

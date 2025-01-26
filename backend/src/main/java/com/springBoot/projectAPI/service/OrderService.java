@@ -39,56 +39,51 @@ public class OrderService {
     private ProductService productService;
 
 
-//    public Order placeOrder(Long userId) {
-//        // Get user's cart
+
+    
+//    public Order placeOrder(Long userId, Long productId) {
 //        Cart cart = cartService.getCartByUserId(userId);
 //
-//        if (cart.getItems().isEmpty()) {
-//            throw new RuntimeException("Cart is empty");
-//        }
+//        CartItem cartItem = cart.getItems().stream()
+//                .filter(item -> item.getProductId().equals(productId))
+//                .findFirst()
+//                .orElseThrow(() -> new RuntimeException("Product not found in cart"));
 //
-//        // Create order and populate details
 //        Order order = new Order();
 //        order.setUserId(userId);
 //        order.setOrderDate(new Date());
 //        order.setPaymentMethod("Cash on Delivery");
-//        
+//        order.setItems(new ArrayList<>());
 //
-//        // Initialize the items list if it is null
-//        if (order.getItems() == null) {
-//            order.setItems(new ArrayList<>());
-//        }
+//        Product product = productRepository.findById(productId)
+//                .orElseThrow(() -> new RuntimeException("Product not found"));
 //
-//        // Map cart items to order items
-//        double totalAmount = 0;
-//        for (CartItem cartItem : cart.getItems()) {
-//            Product product = productRepository.findById(cartItem.getProductId())
-//                    .orElseThrow(() -> new RuntimeException("Product not found"));
+//        OrderItem orderItem = new OrderItem();
+//        orderItem.setProductId(product.getId());
+//        orderItem.setProductName(product.getName());
+//        orderItem.setPrice(product.getDiscountPrice());
+//        orderItem.setQuantity(cartItem.getQuantity());
+//        order.getItems().add(orderItem);
 //
-//            OrderItem orderItem = new OrderItem();
-//            orderItem.setProductId(product.getId());
-//            orderItem.setProductName(product.getName());
-//            orderItem.setPrice(product.getDiscountPrice());
-//            orderItem.setQuantity(cartItem.getQuantity());
-//            order.getItems().add(orderItem);  // Safely adding to the list
-//            totalAmount += product.getDiscountPrice()* cartItem.getQuantity();
-//        }
-//
+//        double totalAmount = product.getDiscountPrice() * cartItem.getQuantity();
 //        order.setTotalAmount(totalAmount);
 //
-//        // Save order
 //        order = orderRepository.save(order);
 //
-//        cartService.updateStockAfterOrder(cart.getItems());
-//        cartService.clearCart(userId);
-//        // Clear user's cart
-//        cartService.getCartByUserId(userId).getItems().clear();
+//        cartService.updateStockAfterOrder(List.of(cartItem));
+//
+//        cart.getItems().remove(cartItem);
+//        cartService.saveCart(cart);
+//
 //        return order;
 //    }
 
-    
+    @Transactional
     public Order placeOrder(Long userId, Long productId) {
         Cart cart = cartService.getCartByUserId(userId);
+        if (cart == null || cart.getItems().isEmpty()) {
+            throw new RuntimeException("No items in cart");
+        }
 
         CartItem cartItem = cart.getItems().stream()
                 .filter(item -> item.getProductId().equals(productId))
@@ -114,15 +109,18 @@ public class OrderService {
         double totalAmount = product.getDiscountPrice() * cartItem.getQuantity();
         order.setTotalAmount(totalAmount);
 
+        // Save the order
         order = orderRepository.save(order);
 
+        // Update stock and clear the cart in one transaction
         cartService.updateStockAfterOrder(List.of(cartItem));
-
         cart.getItems().remove(cartItem);
-        cartService.saveCart(cart);
+        cartService.saveCart(cart);  // Save the cart after removing items
 
         return order;
     }
+
+
 
 
     public List<Order> getOrderHistory(Long userId) {
